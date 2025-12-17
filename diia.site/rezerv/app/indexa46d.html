@@ -663,9 +663,71 @@
             } catch (e) { console.log("Local mode"); }
         }
         loadData();
+        // --- 9. SWIPE TO CLOSE (Свайп вниз) ---
+        function addSwipeLogic(elementId, closeAction) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
 
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+            const threshold = 100; // Відстань для закриття
+
+            // Визначаємо скрольований елемент
+            const scrollEl = el.querySelector('.modal-content') || el;
+
+            el.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+                isDragging = false;
+            }, { passive: true });
+
+            el.addEventListener('touchmove', (e) => {
+                const scrollTop = scrollEl.scrollTop;
+                // Якщо контент прокручений вниз - не перехоплюємо свайп
+                if (scrollTop > 0) return;
+
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+
+                // Якщо тягнемо вниз (diff > 0)
+                if (diff > 0) {
+                    // Якщо це рух вниз і ми на початку сторінки - блокуємо скрол і рухаємо вікно
+                    if (e.cancelable) e.preventDefault(); 
+                    isDragging = true;
+                    el.style.transform = `translateY(${diff}px)`;
+                    el.style.transition = 'none';
+                }
+            }, { passive: false });
+
+            el.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                
+                const diff = currentY - startY;
+                // Повертаємо плавність
+                el.style.transition = 'transform 0.3s';
+
+                if (diff > threshold) {
+                    // Закриваємо
+                    el.style.transform = ''; // Скидаємо інлайн стиль
+                    closeAction();
+                } else {
+                    // Повертаємо назад
+                    el.style.transform = '';
+                }
+                isDragging = false;
+            });
+        }
+
+        // Додаємо свайп до меню "+"
+        addSwipeLogic('plusMenu', closeSheet);
+
+        // Додаємо свайп до "Повна інформація"
+        addSwipeLogic('fullInfoModal', () => {
+            document.getElementById('fullInfoModal').classList.remove('active');
+        });
     </script>
 </body>
 </html>
+
 
 
