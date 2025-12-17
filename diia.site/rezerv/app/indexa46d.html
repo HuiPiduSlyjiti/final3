@@ -1,515 +1,182 @@
 <!DOCTYPE html>
-<html lang="uk" style="height: 100%;">
-
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Резерв+</title>
-
-    <link rel="icon" type="image/png" href="../rezervvvassets/favicon.png">
-    <link rel="apple-touch-icon" href="../rezervvvassets/favicon.png">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резерв ID</title>
     <style>
-        /* Шрифти */
-        @font-face {
-            font-family: 'e-Ukraine';
-            src: url('../rezervvvassets/e-Ukraine-Regular.woff') format('woff');
-            font-weight: 400;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'e-Ukraine-Head';
-            src: url('../rezervvvassets/e-UkraineHead-Medium.woff') format('woff');
-            font-weight: 500;
-            font-display: swap;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'e-Ukraine', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            background-color: #f0f2e9;
-            height: 100vh;
-            overflow: hidden;
+            /* Правка 3: Загальний фон трохи світліший за фон картки */
+            background-color: #222222; 
             display: flex;
-            flex-direction: column;
-        }
-
-        /* --- ЗАСТАВКА --- */
-        .startBlock {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1c1c1c;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        
-        .startBlock.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .startBlock img {
-            width: 80px;
-            margin-bottom: 20px;
-        }
-
-        .startBlock span {
-            color: #dcd9c6;
-            font-size: 24px;
-            text-align: center;
-            line-height: 1.2;
-            font-family: 'e-Ukraine-Head', sans-serif;
-        }
-
-        /* --- HEADER --- */
-        .header {
-            padding: 50px 20px 10px 20px;
-            display: flex;
-            justify-content: flex-end;
             align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        .notification-btn {
-            background: #fff;
-            padding: 8px 16px;
+        .card {
+            background-color: #000000; /* Фон картки залишається чорним */
+            color: white;
+            width: 100%;
+            max-width: 360px;
             border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+            /* Додаємо відступ зверху та знизу, щоб було видно загальний фон */
+            margin: 20px 0;
+        }
+
+        /* Стилі для бігучої стрічки */
+        .ticker-container {
+            /* Правка 2: Колір фону стрічки */
+            background-color: #6c4c1b;
+            overflow: hidden;
+            white-space: nowrap;
+            /* Правка 1: Стрічка вужча */
+            padding: 4px 0; 
+            height: 24px; /* Фіксуємо вузьку висоту */
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            color: #000;
         }
 
-        /* Дзвоник SVG */
-        .notification-icon svg {
-            width: 18px;
-            height: 18px;
-            display: block;
-        }
-
-        /* --- MAIN SLIDER --- */
-        .swiper-container {
-            width: 100%;
-            height: 100%;
-            padding-top: 10px;
-            padding-bottom: 100px;
-            perspective: 1000px;
-        }
-
-        .swiper-slide {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 0 15px;
-        }
-
-        /* --- КАРТКА (FLIP) --- */
-        .card-wrapper {
-            width: 100%;
-            max-width: 380px;
-            min-height: 580px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-            cursor: pointer;
-        }
-
-        .card-wrapper.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-side {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            
-            /* --- КОЛІР ФОНУ КАРТКИ --- */
-            background-color: #d6d3b9; /* Підібрано під фон тризуба */
-            /* ------------------------- */
-
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Лицьова сторона */
-        .card-front {
-            z-index: 2;
-            transform: rotateY(0deg);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-        }
-
-        .card-title {
-            font-family: 'e-Ukraine-Head', sans-serif;
-            font-size: 32px;
-            color: #000;
-            font-weight: 500;
-        }
-
-        .card-logo {
-            width: 42px;
-            /* Логотип без накладання, щоб фон збігався */
-            display: block;
-        }
-
-        .data-row {
-            margin-bottom: 24px;
-        }
-
-        .data-label {
-            font-size: 15px;
-            color: rgba(0, 0, 0, 0.55);
-            margin-bottom: 6px;
-        }
-
-        .data-value {
-            font-size: 20px;
-            font-weight: 500;
-            color: #000;
-        }
-
-        /* Marquee */
-        .marquee-wrapper {
-            background: #5e5b43;
-            color: #fff;
-            padding: 12px 0;
-            margin-left: -24px;
-            margin-right: -24px;
-            margin-top: auto;
-            margin-bottom: 24px;
-            white-space: nowrap;
-            overflow: hidden;
-            font-size: 13px;
-            position: relative;
-        }
-
-        .marquee-content {
+        .ticker-text {
             display: inline-block;
-            animation: marquee 12s linear infinite;
+            /* Анімація для нескінченного руху */
+            animation: marquee 15s linear infinite;
+            font-weight: 500;
+            font-size: 14px;
+            /* Щоб текст був по центру стрічки */
+            line-height: 24px; 
         }
 
         @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* Стилі для контенту картки (залишив як було для прикладу) */
+        .card-content {
+            padding: 20px;
         }
 
-        .card-footer {
-            margin-top: 10px;
-            position: relative;
-        }
-
-        .status {
-            color: rgba(0, 0, 0, 0.6);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .user-name {
-            font-family: 'e-Ukraine-Head', sans-serif;
-            font-size: 28px;
-            line-height: 1.2;
-            color: #000;
-            text-transform: uppercase;
-            padding-right: 50px;
-        }
-
-        .btn-plus {
-            position: absolute;
-            right: 0;
-            bottom: 5px;
-            width: 56px;
-            height: 56px;
-            background: #ff8c21;
-            border-radius: 50%;
+        .header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(255, 140, 33, 0.3);
-        }
-
-        .btn-plus svg {
-            width: 28px;
-            height: 28px;
-            fill: #000;
-        }
-
-        /* Зворотна сторона */
-        .card-back {
-            transform: rotateY(180deg);
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .qr-wrapper {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 20px;
         }
-
-        .qr-wrapper img {
-            width: 220px;
-            height: 220px;
-            display: block;
+        
+        .logo {
+             font-size: 24px;
+             font-weight: bold;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
         }
 
-        .qr-text {
-            font-size: 14px;
-            color: rgba(0,0,0,0.6);
-            max-width: 200px;
-            line-height: 1.4;
-        }
-
-        /* --- FOOTER --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
+        .photo-container {
             width: 100%;
-            background: #fff;
-            padding: 12px 0 30px;
+            height: 400px; /* Приблизна висота для фото */
+            background-color: #333; /* Заглушка для фото */
+            border-radius: 15px;
+            margin-bottom: 25px;
             display: flex;
-            justify-content: space-around;
-            border-top: 1px solid #eee;
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            color: #777;
+        }
+
+        .data-row {
+            margin-bottom: 15px;
+        }
+
+        .data-label {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            font-size: 18px;
+            font-weight: 600;
+            /* Правка 4: Прибираємо text-transform: uppercase звідси,
+               тепер регістр залежить від того, як написано в HTML.
+            */
+        }
+        
+        .footer-bar {
+            display: flex;
+            justify-content: center;
+            padding-bottom: 10px;
+        }
+        .dots {
+            display: flex;
             gap: 5px;
-            width: 33%;
-            opacity: 0.5;
-            transition: 0.2s;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #555;
+            border-radius: 50%;
+        }
+        .dot.active {
+            background-color: white;
         }
 
-        .nav-item.active {
-            opacity: 1;
-        }
-
-        .nav-icon svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .nav-text {
-            font-size: 11px;
-            font-weight: 500;
-            color: #000;
-        }
     </style>
 </head>
-
 <body>
 
-    <div class="startBlock" id="splash">
-        <img src="../rezervvvassets/minOboronaMain.jpg" alt="Logo">
-        <span>Міністерство <br> оборони <br> України</span>
-    </div>
-
-    <div class="header">
-        <div class="notification-btn">
-            Сповіщення
-            <div class="notification-icon">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="black"/>
-                </svg>
+    <div class="card">
+        <div class="ticker-container">
+            <div class="ticker-text">
+                Документ оновлено о 12:45 • Дані актуальні • Документ оновлено о 12:45 • Дані актуальні
             </div>
         </div>
-    </div>
 
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                
-                <div class="card-wrapper" id="cardFlipper">
-                    
-                    <div class="card-side card-front">
-                        <div class="card-header">
-                            <div class="card-title">Резерв ID</div>
-                            <img src="../rezervvvassets/minOborona.jpg" class="card-logo">
-                        </div>
+        <div class="card-content">
+            <div class="header">
+                <div class="logo">Резерв ID</div>
+                <div class="menu-icon">...</div>
+            </div>
 
-                        <div class="card-body">
-                            <div class="data-row">
-                                <div class="data-label">Дата народження:</div>
-                                <div class="data-value" id="birthDate">10.07.1999</div>
-                            </div>
-                            <div class="data-row">
-                                <div class="data-label">Відстрочка до:</div>
-                                <div class="data-value" id="vid_date">03.02.2026</div>
-                            </div>
-                        </div>
+            <div class="photo-container">
+                Місце для фото
+            </div>
 
-                        <div class="marquee-wrapper">
-                            <div class="marquee-content">
-                                &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &nbsp;
-                            </div>
-                        </div>
+            <div class="data-row">
+                <div class="data-label">Прізвище</div>
+                <div class="data-value">ПЕТРЕНКО</div>
+            </div>
 
-                        <div class="card-footer">
-                            <div class="status">Військовозобов'язаний</div>
-                            <div class="user-name" id="userName">
-                                ФЕДОРЦІВ<br>Любомир<br>Ігорович
-                            </div>
-                            <div class="btn-plus">
-                                <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
-                            </div>
-                        </div>
-                    </div>
+            <div class="data-row">
+                <div class="data-label">Ім'я</div>
+                <div class="data-value">Іван</div>
+            </div>
 
-                    <div class="card-side card-back">
-                        <div class="qr-wrapper">
-                            <img src="../rezervvvassets/qrmain.png" alt="QR" onerror="this.src='../rezervvvassets/qr-code.png'">
-                        </div>
-                        <p class="qr-text">Покажіть цей QR-код для перевірки військово-облікового документа</p>
-                    </div>
+            <div class="data-row">
+                <div class="data-label">По батькові</div>
+                <div class="data-value">Іванович</div>
+            </div>
+            
+            <div class="data-row">
+                <div class="data-label">Дата народження</div>
+                <div class="data-value">01.01.1990</div>
+            </div>
 
+            <div class="footer-bar">
+                <div class="dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6Z" fill="black"/><rect x="8" y="6" width="8" height="2" fill="white"/><rect x="8" y="10" width="8" height="2" fill="white"/></svg>
-            </div>
-            <div class="nav-text">Резерв ID</div>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="2" width="14.14" height="14.14" transform="rotate(45 12 2)" stroke="black" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="black"/></svg>
-            </div>
-            <div class="nav-text">Вакансії</div>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12H20" stroke="black" stroke-width="2" stroke-linecap="round"/><path d="M4 6H20" stroke="black" stroke-width="2" stroke-linecap="round"/><path d="M4 18H20" stroke="black" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div class="nav-text">Меню</div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <script>
-        // 1. Анімація зникнення заставки
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                var splash = document.getElementById('splash');
-                if(splash) splash.classList.add('hidden');
-            }, 2000);
-        });
-
-        // Резервне прибирання заставки, якщо подія load не спрацювала коректно
-        setTimeout(function() {
-            var splash = document.getElementById('splash');
-            if(splash) splash.classList.add('hidden');
-        }, 3000);
-
-        // 2. Swiper
-        var swiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            effect: 'slide',
-            resistance: true,
-            resistanceRatio: 0.85
-        });
-
-        // 3. Переворот картки (нативний JS, щоб працювало без jQuery)
-        var cardWrapper = document.getElementById('cardFlipper');
-        if(cardWrapper) {
-            cardWrapper.addEventListener('click', function() {
-                this.classList.toggle('is-flipped');
-            });
-        }
-
-        // 4. Час
-        function updateTime() {
-            var now = new Date();
-            var h = String(now.getHours()).padStart(2, '0');
-            var m = String(now.getMinutes()).padStart(2, '0');
-            var d = String(now.getDate()).padStart(2, '0');
-            var mo = String(now.getMonth() + 1).padStart(2, '0');
-            var y = now.getFullYear();
-            
-            var timeString = h + ':' + m + ' | ' + d + '.' + mo + '.' + y;
-            
-            var timeSpans = document.querySelectorAll('.time-now');
-            timeSpans.forEach(function(span) {
-                span.textContent = timeString;
-            });
-        }
-        updateTime();
-        setInterval(updateTime, 60000);
-
-        // 5. Завантаження даних (з захистом від помилок)
-        async function loadData() {
-            try {
-                // Отримуємо код з URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const currentCode = urlParams.get('code');
-
-                if (!currentCode) return; // Залишаємо дефолтні дані з HTML
-
-                if (typeof $ !== 'undefined') {
-                    const allUsersData = await $.getJSON('checkFiles.json');
-                    let userData = null;
-                    if (Array.isArray(allUsersData)) {
-                        userData = allUsersData.find(user => user.code === currentCode);
-                    }
-
-                    if (userData) {
-                        if(userData.fio) $('#userName').html(userData.fio.replace(/ /g, '<br>'));
-                        if(userData.birth) $('#birthDate').text(userData.birth);
-                        if(userData.vid_date) $('#vid_date').text(userData.vid_date);
-                    }
-                }
-            } catch (e) {
-                console.log("Локальний режим або помилка JSON. Використовуються дані з HTML.");
-            }
-        }
-        loadData();
-
-    </script>
 </body>
 </html>
