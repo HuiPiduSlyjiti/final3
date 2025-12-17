@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <style>
-        /* Шрифти */
+        /* --- Шрифти --- */
         @font-face {
             font-family: 'e-Ukraine';
             src: url('../rezervvvassets/e-Ukraine-Regular.woff') format('woff');
@@ -37,7 +37,7 @@
         }
 
         body {
-            background-color: #f0f2e9; /* Світлий фон як на скріні */
+            background-color: #f0f2e9;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -51,17 +51,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #1c1c1c; /* Темний фон заставки */
+            background: #1c1c1c;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
         
         .startBlock.hidden {
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
         }
 
@@ -78,12 +79,9 @@
             font-family: 'e-Ukraine-Head', sans-serif;
         }
 
-        /* --- Пін-код (пропускаємо логіку, просто ховаємо для демо, або додамо якщо треба) --- */
-        /* Для спрощення зразу показуємо основний екран після заставки */
-
-        /* --- Основний інтерфейс --- */
+        /* --- Header --- */
         .header {
-            padding: 50px 20px 10px 20px; /* Відступ під статус бар */
+            padding: 50px 20px 10px 20px;
             display: flex;
             justify-content: flex-end;
             align-items: center;
@@ -102,17 +100,22 @@
             color: #000;
         }
 
-        .notification-btn img {
-            width: 16px;
-            height: 16px;
+        /* Дзвоник (SVG) */
+        .notification-icon {
+            width: 18px;
+            height: 18px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9'/%3E%3Cpath d='M13.73 21a2 2 0 0 1-3.46 0'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
-        /* Слайдер */
+        /* --- Swiper Container --- */
         .swiper-container {
             width: 100%;
             height: 100%;
             padding-top: 20px;
-            padding-bottom: 100px; /* Місце під футер */
+            padding-bottom: 100px;
+            perspective: 1000px; 
         }
 
         .swiper-slide {
@@ -122,19 +125,49 @@
             padding: 0 15px;
         }
 
-        /* --- Картка "Резерв ID" --- */
-        .card {
+        /* --- КАРТКА (Flip ефект) --- */
+        .card-wrapper {
             width: 100%;
             max-width: 380px;
-            background-color: #e3e1d3; /* Оливково-бежевий колір картки */
+            min-height: 580px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .card-wrapper.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Спільні стилі для обох сторін картки */
+        .card-side {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            
+            /* --- ВАЖЛИВО: КОЛІР ФОНУ КАРТКИ --- */
+            /* Якщо цей колір не збігається з фоном твого Тризуба, 
+               візьми піпеткою колір з картинки minOborona.jpg і встав сюди код */
+            background-color: #959282; 
+            /* ---------------------------------- */
+
             border-radius: 24px;
             padding: 24px;
-            position: relative;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid #d1d1c6;
+            border: 1px solid rgba(0,0,0,0.1); /* Легка рамка */
             display: flex;
             flex-direction: column;
-            min-height: 580px; /* Висота під контент */
+        }
+
+        /* --- Лицьова сторона --- */
+        .card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
         }
 
         .card-header {
@@ -153,7 +186,8 @@
 
         .card-logo {
             width: 40px;
-            opacity: 0.9;
+            /* Прибрано mix-blend-mode, щоб картинка мала свій рідний фон */
+            opacity: 1; 
         }
 
         .data-row {
@@ -162,7 +196,7 @@
 
         .data-label {
             font-size: 15px;
-            color: #666;
+            color: rgba(0, 0, 0, 0.6); /* Трохи прозорий чорний для кращого контрасту на темному фоні */
             margin-bottom: 6px;
         }
 
@@ -174,12 +208,12 @@
 
         /* Бігучий рядок */
         .marquee-wrapper {
-            background: #5e5b43; /* Темно-оливковий */
+            background: rgba(0, 0, 0, 0.2); /* Напівпрозорий темний фон */
             color: #fff;
             padding: 12px 0;
             margin-left: -24px;
             margin-right: -24px;
-            margin-top: auto; /* Притиснути до низу верхньої секції */
+            margin-top: auto;
             margin-bottom: 24px;
             white-space: nowrap;
             overflow: hidden;
@@ -197,14 +231,13 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* Нижня частина картки */
         .card-footer {
             margin-top: 10px;
             position: relative;
         }
 
         .status {
-            color: #555;
+            color: rgba(0, 0, 0, 0.7);
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -225,13 +258,12 @@
             bottom: 5px;
             width: 56px;
             height: 56px;
-            background: #ff8c21; /* Помаранчевий */
+            background: #ff8c21;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(255, 140, 33, 0.3);
-            cursor: pointer;
         }
 
         .btn-plus::before, .btn-plus::after {
@@ -243,14 +275,42 @@
         .btn-plus::before { width: 24px; height: 3px; }
         .btn-plus::after { width: 3px; height: 24px; }
 
+        /* --- Зворотна сторона (QR) --- */
+        .card-back {
+            transform: rotateY(180deg);
+            justify-content: center;
+            align-items: center;
+            /* Фон береться зі спільного класу .card-side */
+            text-align: center;
+        }
 
-        /* --- Меню (Футер) --- */
+        .qr-code-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .qr-code-container img {
+            width: 200px;
+            height: 200px;
+            display: block;
+        }
+        .qr-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.7);
+            max-width: 80%;
+        }
+
+
+        /* --- Footer Menu --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
             background: #fff;
-            padding: 12px 0 30px; /* + safe area */
+            padding: 12px 0 30px;
             display: flex;
             justify-content: space-around;
             border-top: 1px solid #eee;
@@ -285,164 +345,7 @@
             color: #000;
         }
 
-        /* Іконки для меню (SVG inlined for reliability) */
-        .icon-doc {
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6Z' fill='black'/%3E%3Crect x='8' y='6' width='8' height='2' fill='white'/%3E%3Crect x='8' y='10' width='8' height='2' fill='white'/%3E%3C/svg%3E");
-        }
-        .icon-vac {
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='12' y='2' width='14.14' height='14.14' transform='rotate(45 12 2)' stroke='black' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='3' fill='black'/%3E%3C/svg%3E");
-        }
-        .icon-menu {
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 12H20' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M4 6H20' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M4 18H20' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
-        }
-
-    </style>
-</head>
-
-<body>
-
-    <div class="startBlock" id="splash">
-        <img src="../rezervvvassets/minOboronaMain.jpg" alt="Logo">
-        <span>Міністерство <br> оборони <br> України</span>
-    </div>
-
-    <div class="header">
-        <div class="notification-btn">
-            Сповіщення
-            <img src="https://img.icons8.com/material-outlined/24/000000/bell--v1.png" alt="bell"/>
-        </div>
-    </div>
-
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Резерв ID</div>
-                        <img src="../rezervvvassets/minOborona.jpg" class="card-logo" style="mix-blend-mode: multiply;">
-                    </div>
-
-                    <div class="card-body">
-                        <div class="data-row">
-                            <div class="data-label">Дата народження:</div>
-                            <div class="data-value" id="birthDate">Loading...</div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-label">Відстрочка до:</div>
-                            <div class="data-value" id="vid_date">Loading...</div>
-                        </div>
-                    </div>
-
-                    <div class="marquee-wrapper">
-                        <div class="marquee-content">
-                            &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &bull; Документ оновлено о <span class="time-now"></span> &bull; На обліку &nbsp;
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="status">Військовозобов'язаний</div>
-                        <div class="user-name" id="userName">
-                            </div>
-                        <div class="btn-plus"></div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active">
-            <div class="nav-icon icon-doc"></div>
-            <div class="nav-text">Резерв ID</div>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon icon-vac"></div>
-            <div class="nav-text">Вакансії</div>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon icon-menu"></div>
-            <div class="nav-text">Меню</div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <script>
-        // 1. Анімація заставки
-        $(document).ready(function() {
-            setTimeout(function() {
-                $('#splash').addClass('hidden');
-            }, 2500); // Заставка зникне через 2.5 секунди
-        });
-
-        // 2. Ініціалізація Swiper (щоб картка пружинила як у додатку)
-        const swiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            effect: 'slide',
-            resistance: true,
-            resistanceRatio: 0.85
-        });
-
-        // 3. Час і дата
-        function updateTime() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            const mo = String(now.getMonth() + 1).padStart(2, '0');
-            const y = now.getFullYear();
-            
-            const timeString = `${h}:${m} | ${d}.${mo}.${y}`;
-            $('.time-now').text(timeString);
-        }
-        updateTime();
-        setInterval(updateTime, 60000); // Оновлювати щохвилини
-
-        // 4. Отримання даних з checkFiles.json
-        function getCodeFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('code');
-        }
-
-        async function loadData() {
-            const code = getCodeFromUrl();
-            if(!code) return; // Якщо коду немає в URL, нічого не робимо (або можна вставити тестові дані)
-
-            // Список полів для оновлення
-            const fields = {
-                'fio': '#userName',
-                'birth': '#birthDate',
-                'vid_date': '#vid_date'
-            };
-
-            for (const [key, selector] of Object.entries(fields)) {
-                try {
-                    // Запит до checkFiles.json (він лежить в тій самій папці app)
-                    $.post('checkFiles.json', { name: key, code: code }, function(data) {
-                        if (data && data.value) {
-                            if (key === 'fio') {
-                                // Розбиваємо ПІБ на рядки
-                                const parts = data.value.split(' ');
-                                let html = '';
-                                parts.forEach(part => html += part + '<br>');
-                                $(selector).html(html);
-                            } else {
-                                $(selector).text(data.value);
-                            }
-                        }
-                    });
-                } catch (e) {
-                    console.error("Помилка завантаження даних:", e);
-                }
-            }
-        }
-
-        loadData();
-
-    </script>
-</body>
-</html>
+        /* Icons (SVG) */
+        .icon-doc { background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6Z' fill='black'/%3E%3Crect x='8' y='6' width='8' height='2' fill='white'/%3E%3Crect x='8' y='10' width='8' height='2' fill='white'/%3E%3C/svg%3E"); }
+        .icon-vac { background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='12' y='2' width='14.14' height='14.14' transform='rotate(45 12 2)' stroke='black' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='3' fill='black'/%3E%3C/svg%3E"); }
+        .icon-menu { background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d
